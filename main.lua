@@ -1,5 +1,7 @@
+-- Load Rayfield UI
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
+-- Create Main UI Window
 local MainWindow = Rayfield:CreateWindow({
     Name = "EasyOP - Play games, your way.",
     Icon = "gamepad",
@@ -14,7 +16,7 @@ local MainWindow = Rayfield:CreateWindow({
     DisableBuildWarnings = false,
 
     ConfigurationSaving = {
-        Enabled = false,  -- maybe I will enable it sometime
+        Enabled = false, -- Optional future setting
         FolderName = nil,
         FileName = "EasyOP"
     },
@@ -37,12 +39,13 @@ local MainWindow = Rayfield:CreateWindow({
     }
 })
 
+-- Scripts Tab
 local Scripts = MainWindow:CreateTab("Scripts", "scroll")
 
-local InfiniteYieldButton = Scripts:CreateButton({
+Scripts:CreateButton({
     Name = "Infinite Yield",
     Callback = function()
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
         Rayfield:Notify({
             Title = "Executed Successfully",
             Content = "Infinite Yield has been loaded.",
@@ -51,10 +54,11 @@ local InfiniteYieldButton = Scripts:CreateButton({
         })
     end,
 })
-local NamelessAdmin = Scripts:CreateButton({
+
+Scripts:CreateButton({
     Name = "Nameless Admin",
     Callback = function()
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/FilteringEnabled/NamelessAdmin/main/Source'))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/FilteringEnabled/NamelessAdmin/main/Source"))()
         Rayfield:Notify({
             Title = "Executed Successfully",
             Content = "Nameless Admin has been loaded.",
@@ -64,22 +68,28 @@ local NamelessAdmin = Scripts:CreateButton({
     end,
 })
 
+-- LocalPlayer Tab
 local LocalPlayer = MainWindow:CreateTab("LocalPlayer", "user")
 
-
-local SuperSpeedToggle = LocalPlayer:CreateToggle({
+-- SuperSpeed Toggle
+LocalPlayer:CreateToggle({
     Name = "SuperSpeed",
     CurrentValue = false,
     Flag = "SuperSpeedToggle",
     Callback = function(Value)
         local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-
-        if Value == true then
-            humanoid.WalkSpeed = 1000
-        else
-            humanoid.WalkSpeed = 16
+        local function applySpeed()
+            local character = player.Character or player.CharacterAdded:Wait()
+            local humanoid = character:WaitForChild("Humanoid")
+            humanoid.WalkSpeed = Value and 1000 or 16
         end
+
+        applySpeed()
+        player.CharacterAdded:Connect(function()
+            if Value then
+                wait(0.1)
+                applySpeed()
+            end
+        end)
     end,
 })
